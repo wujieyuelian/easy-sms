@@ -19,7 +19,7 @@ use Overtrue\EasySms\Traits\HasHttpRequest;
 
 /**
  * Class JSMSGateway.
- * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ¼«¹â¶ÌÐÅ
  * @see https://api.sms.jpush.cn/v1/
  */
 class JsmsGateway extends Gateway
@@ -52,7 +52,6 @@ class JsmsGateway extends Gateway
         ], array());
 
         $mobile = (string)$to->getNumber();
-//        $msg = (string)$message->getData($this);
 
         $temp_id = $message->getTemplate($this);
         $temp_para = $message->getData($this);
@@ -65,10 +64,7 @@ class JsmsGateway extends Gateway
         if (!empty($temp_para)) {
             $body['temp_para'] = $temp_para;
         }
-        if (isset($time)) {
-            $path = 'schedule';
-            $body['send_time'] = $time;
-        }
+ 
         $url = self::URL . $path;
         $result = $this->request1('POST', $url, $body);
 
@@ -110,28 +106,13 @@ class JsmsGateway extends Gateway
         $output = curl_exec($ch);
 
         if($output === false) {
-//            return "Error Code:" . curl_errno($ch) . ", Error Message:".curl_error($ch);
             $response['code'] = -1;
             $response['msg'] = curl_error($ch);
         } else {
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-//            $header_text = substr($output, 0, $header_size);
             $body = substr($output, $header_size);
-//            $headers = array();
-//
-//            foreach (explode("\r\n", $header_text) as $i => $line) {
-//                if (!empty($line)) {
-//                    if ($i === 0) {
-//                        $headers[0] = $line;
-//                    } else if (strpos($line, ": ")) {
-//                        list ($key, $value) = explode(': ', $line);
-//                        $headers[$key] = $value;
-//                    }
-//                }
-//            }
-//
-//            $response['headers'] = $headers;
+
             $response['body'] = json_decode($body, true);
             $response['code'] = $httpCode;
             $response['msg'] = isset($response['body']['error']['message']) ? $response['body']['error']['message'] : '';
